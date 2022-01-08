@@ -9,4 +9,4 @@ So this was the good opportunity to try to use Python for something different. B
 
 ## Rules
 
-The idea is to control a spaceship and avoid obstacles. It is a like Rhythm Game... Not sure about that, but let's see !
+The idea is to control a spaceship and avoid obstacles. It is like a Rhythm Game... Not sure about that, but let's see !
