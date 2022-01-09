@@ -9,13 +9,17 @@ Config.set('graphics', 'height', '400')
 from kivy.app import App
 from kivy.graphics import Color, Line, Quad, Triangle
 from kivy.properties import NumericProperty, Clock
-from kivy.uix.widget import Widget
+from kivy.uix.relativelayout import RelativeLayout
 from kivy.core.window import Window
+from kivy.lang import Builder
+
+Builder.load_file('menu.kv')
 
 
-class MainWidget(Widget):
+class MainWidget(RelativeLayout):
     from transforms import transform, transform_2d, transform_perspective
     from user_actions import keyboard_closed, on_keyboard_up, on_keyboard_down, on_touch_up, on_touch_down
+
     # Vanishing point
     perspective_point_x = NumericProperty(0)
     perspective_point_y = NumericProperty(0)
@@ -109,7 +113,6 @@ class MainWidget(Widget):
         last_x = 0
         last_y = 0
         # Delete coordinates when the tile is off screen
-        # ti_y < self.current_y_loop
         for i in range(len(self.tiles_coordinates) - 1, -1, -1):
             if self.tiles_coordinates[i][1] < self.current_y_loop:
                 del self.tiles_coordinates[i]
