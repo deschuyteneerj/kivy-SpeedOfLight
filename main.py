@@ -86,8 +86,20 @@ class MainWidget(Widget):
         return x, y
 
     def generate_tiles_coordinates(self):
-        for i in range(0, self.NB_TILES):
-            self.tiles_coordinates.append((0, i))
+        last_y = 0
+        # Delete coordinates when the tile is off screen
+        # ti_y < self.current_y_loop
+        for i in range(len(self.tiles_coordinates) - 1, -1, -1):
+            if self.tiles_coordinates[i][1] < self.current_y_loop:
+                del self.tiles_coordinates[i]
+
+        if len(self.tiles_coordinates) > 0:
+            last_coordinate = self.tiles_coordinates[-1]
+            last_y = last_coordinate[1] + 1
+
+        for i in range(len(self.tiles_coordinates), self.NB_TILES):
+            self.tiles_coordinates.append((0, last_y))
+            last_y += 1
 
     # Every Init and Update functions
     # Tiles
@@ -159,6 +171,7 @@ class MainWidget(Widget):
         if self.current_offset_y >= spacing_y:
             self.current_offset_y -= spacing_y
             self.current_y_loop += 1
+            self.generate_tiles_coordinates()
 
         # self.current_offset_x += self.current_speed_x * time_factor
 
