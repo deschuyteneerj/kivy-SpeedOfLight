@@ -22,7 +22,7 @@ class MainWidget(Widget):
 
     # Vertical lines
     V_NB_LINES = 8
-    V_LINES_SPACING = .2  # screen width percentage
+    V_LINES_SPACING = .1  # screen width percentage
     vertical_lines = []
 
     # Horizontal lines
@@ -31,7 +31,7 @@ class MainWidget(Widget):
     horizontal_lines = []
 
     # Moving effect on horizontal lines
-    SPEED = .8
+    SPEED = .2
     current_offset_y = 0
     current_y_loop = 0
 
@@ -50,6 +50,7 @@ class MainWidget(Widget):
     SHIP_HEIGHT = 0.035
     SHIP_BASE_Y = 0.04
     ship = None
+    ship_coordinates = [(0, 0), (0, 0), (0, 0)]
 
     # Function to initialize the game
     def __init__(self, **kwargs):
@@ -161,10 +162,34 @@ class MainWidget(Widget):
         base_y = self.SHIP_BASE_Y * self.height
         half_width = self.SHIP_WIDTH * self.width / 2
         ship_height = self.SHIP_HEIGHT * self.height
-        x1, y1 = self.transform(center_x - half_width, base_y)
-        x2, y2 = self.transform(center_x, base_y + ship_height)
-        x3, y3 = self.transform(center_x + half_width, base_y)
+        self.ship_coordinates[0] = (center_x - half_width, base_y)
+        self.ship_coordinates[1] = (center_x, base_y + ship_height)
+        self.ship_coordinates[2] = (center_x + half_width, base_y)
+        x1, y1 = self.transform(*self.ship_coordinates[0])
+        x2, y2 = self.transform(*self.ship_coordinates[1])
+        x3, y3 = self.transform(*self.ship_coordinates[2])
         self.ship.points = [x1, y1, x2, y2, x3, y3]
+
+    # Function to check if ship is always on the road grid
+    def check_ship_collisions(self):
+        for i in range(0, len(self.tiles_coordinates)):
+            ti_x, ti_y = self.tiles_coordinates[i]
+            # Check if we are on the 2 lasts tiles, no need to test collisions after 2nd tile
+            if ti_y > self.current_y_loop + 1:
+                return False
+            if self.check_ship_collision_with_tile(ti_x, ti_y):
+                return True
+        return False
+
+    # Function to check collisions
+    def check_ship_collision_with_tile(self, ti_x, ti_y):
+        xmin, ymin = self.get_tile_coordinates(ti_x, ti_y)
+        xmax, ymax = self.get_tile_coordinates(ti_x + 1, ti_y + 1)
+        for i in range(0, 3):
+            px, py = self.ship_coordinates[i]
+            if xmin <= px <= xmax and ymin <= py <= ymax:
+                return True
+        return False
 
     # Tiles
     def init_tiles(self):
@@ -245,6 +270,9 @@ class MainWidget(Widget):
         # Activate the controls on keyboard/touch
         speed_x = self.current_speed_x * self.width / 100
         self.current_offset_x += speed_x * time_factor
+        if not self.check_ship_collisions():
+            print('Game Over')
+
 
 
 class SpeedOfLightApp(App):
