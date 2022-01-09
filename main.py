@@ -31,7 +31,8 @@ class MainWidget(Widget):
         Clock.schedule_interval(self.update, 1.0 / 60.0)
 
     def on_parent(self, widget, parent):
-        print('ON PARENT W:' + str(self.width) + ' H:' + str(self.height))
+        pass
+        # print('ON PARENT W:' + str(self.width) + ' H:' + str(self.height))
 
     def on_size(self, *args):
         pass
@@ -112,10 +113,11 @@ class MainWidget(Widget):
 
     # Function refresh 60 fps
     def update(self, dt):
-        # print('update')
+        # print('dt: ' + str(dt * 60))
+        time_factor = dt * 60
         self.update_vertical_lines()
         self.update_horizontal_lines()
-        self.current_offset_y += self.SPEED
+        self.current_offset_y += self.SPEED * time_factor
 
         spacing_y = self.H_LINES_SPACING * self.height
         if self.current_offset_y >= spacing_y:
