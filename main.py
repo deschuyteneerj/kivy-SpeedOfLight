@@ -21,8 +21,8 @@ class MainWidget(Widget):
     perspective_point_y = NumericProperty(0)
 
     # Vertical lines
-    V_NB_LINES = 4
-    V_LINES_SPACING = .1  # screen width percentage
+    V_NB_LINES = 8
+    V_LINES_SPACING = .2  # screen width percentage
     vertical_lines = []
 
     # Horizontal lines
@@ -103,10 +103,20 @@ class MainWidget(Widget):
         # Append a new tile
         for i in range(len(self.tiles_coordinates), self.NB_TILES):
             # Random generation of tiles
-            r = random.randint(0, 2)
             # 0 = forward
             # 1 = right
             # 2 = left
+            r = random.randint(0, 2)
+            # First vertical line on the left
+            start_index = -int(self.V_NB_LINES / 2) + 1
+            # Last vertical line on the right
+            end_index = start_index + self.V_NB_LINES - 1
+            # Stay on the grid at all cost! (Go left if max on the right, go right if max on the left)
+            if last_x <= start_index:
+                r = 1
+            if last_x + 1 >= end_index:
+                r = 2
+
             self.tiles_coordinates.append((last_x, last_y))
             # Turn to the right
             if r == 1:
@@ -154,6 +164,7 @@ class MainWidget(Widget):
                 self.vertical_lines.append(Line())
 
     def update_vertical_lines(self):
+        # First vertical line on the left
         start_index = -int(self.V_NB_LINES / 2) + 1
         for i in range(start_index, start_index + self.V_NB_LINES):
             line_x = self.get_line_x_from_index(i)
@@ -169,7 +180,9 @@ class MainWidget(Widget):
                 self.horizontal_lines.append(Line())
 
     def update_horizontal_lines(self):
+        # First vertical line on the left
         start_index = -int(self.V_NB_LINES / 2) + 1
+        # Last vertical line on the right
         end_index = start_index + self.V_NB_LINES - 1
         xmin = self.get_line_x_from_index(start_index)
         xmax = self.get_line_x_from_index(end_index)
