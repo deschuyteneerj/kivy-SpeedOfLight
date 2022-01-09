@@ -7,7 +7,7 @@ Config.set('graphics', 'width', '900')
 Config.set('graphics', 'height', '400')
 
 from kivy.app import App
-from kivy.graphics import Color, Line, Quad
+from kivy.graphics import Color, Line, Quad, Triangle
 from kivy.properties import NumericProperty, Clock
 from kivy.uix.widget import Widget
 from kivy.core.window import Window
@@ -45,6 +45,12 @@ class MainWidget(Widget):
     tiles = []
     tiles_coordinates = []
 
+    # Spaceship
+    SHIP_WIDTH = .1
+    SHIP_HEIGHT = 0.035
+    SHIP_BASE_Y = 0.04
+    ship = None
+
     # Function to initialize the game
     def __init__(self, **kwargs):
         super(MainWidget, self).__init__(**kwargs)
@@ -52,6 +58,7 @@ class MainWidget(Widget):
         self.init_vertical_lines()
         self.init_horizontal_lines()
         self.init_tiles()
+        self.init_ship()
         self.pre_fill_tiles_coordinates()
         self.generate_tiles_coordinates()
 
@@ -140,6 +147,26 @@ class MainWidget(Widget):
             last_y += 1
 
     # Every Init and Update functions
+    # Ship
+    def init_ship(self):
+        with self.canvas:
+            Color(0, 0, 0)
+            self.ship = Triangle()
+            # Triangles() coordinates in order
+            #     2
+            #  1     3
+
+    def update_ship(self):
+        # Measurements in proportion to the screen size
+        center_x = self.width / 2
+        base_y = self.SHIP_BASE_Y * self.height
+        half_width = self.SHIP_WIDTH * self.width / 2
+        ship_height = self.SHIP_HEIGHT * self.height
+        x1, y1 = self.transform(center_x - half_width, base_y)
+        x2, y2 = self.transform(center_x, base_y + ship_height)
+        x3, y3 = self.transform(center_x + half_width, base_y)
+        self.ship.points = [x1, y1, x2, y2, x3, y3]
+
     # Tiles
     def init_tiles(self):
         with self.canvas:
@@ -206,6 +233,7 @@ class MainWidget(Widget):
         self.update_vertical_lines()
         self.update_horizontal_lines()
         self.update_tiles()
+        self.update_ship()
         # Activate the movement effect
         self.current_offset_y += self.SPEED * time_factor
         spacing_y = self.H_LINES_SPACING * self.height
