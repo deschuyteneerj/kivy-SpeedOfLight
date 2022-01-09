@@ -1,3 +1,5 @@
+import random
+
 from kivy import platform
 from kivy.config import Config
 
@@ -29,7 +31,7 @@ class MainWidget(Widget):
     horizontal_lines = []
 
     # Moving effect on horizontal lines
-    SPEED = 1
+    SPEED = 5
     current_offset_y = 0
     current_y_loop = 0
 
@@ -39,7 +41,7 @@ class MainWidget(Widget):
     current_offset_x = 0
 
     # Tiles
-    NB_TILES = 4
+    NB_TILES = 8
     tiles = []
     tiles_coordinates = []
 
@@ -86,19 +88,38 @@ class MainWidget(Widget):
         return x, y
 
     def generate_tiles_coordinates(self):
+        last_x = 0
         last_y = 0
         # Delete coordinates when the tile is off screen
         # ti_y < self.current_y_loop
         for i in range(len(self.tiles_coordinates) - 1, -1, -1):
             if self.tiles_coordinates[i][1] < self.current_y_loop:
                 del self.tiles_coordinates[i]
-
+        # Modify the coordinates of tiles with moving effect
         if len(self.tiles_coordinates) > 0:
             last_coordinate = self.tiles_coordinates[-1]
+            last_x = last_coordinate[0]
             last_y = last_coordinate[1] + 1
-
+        # Append a new tile
         for i in range(len(self.tiles_coordinates), self.NB_TILES):
-            self.tiles_coordinates.append((0, last_y))
+            # Random generation of tiles
+            r = random.randint(0, 2)
+            # 0 = forward
+            # 1 = right
+            # 2 = left
+            self.tiles_coordinates.append((last_x, last_y))
+            # Turn to the right
+            if r == 1:
+                last_x += 1
+                self.tiles_coordinates.append((last_x, last_y))
+                last_y += 1
+                self.tiles_coordinates.append((last_x, last_y))
+            # Turn to the left
+            elif r == 2:
+                last_x -= 1
+                self.tiles_coordinates.append((last_x, last_y))
+                last_y += 1
+                self.tiles_coordinates.append((last_x, last_y))
             last_y += 1
 
     # Every Init and Update functions
@@ -165,6 +186,7 @@ class MainWidget(Widget):
         self.update_vertical_lines()
         self.update_horizontal_lines()
         self.update_tiles()
+        # Activate the movement effect
         self.current_offset_y += self.SPEED * time_factor
         spacing_y = self.H_LINES_SPACING * self.height
         # Loop for infinite moving effect
@@ -172,8 +194,8 @@ class MainWidget(Widget):
             self.current_offset_y -= spacing_y
             self.current_y_loop += 1
             self.generate_tiles_coordinates()
-
-        # self.current_offset_x += self.current_speed_x * time_factor
+        # Activate the controls on keyboard/touch
+        self.current_offset_x += self.current_speed_x * time_factor
 
 
 class SpeedOfLightApp(App):
