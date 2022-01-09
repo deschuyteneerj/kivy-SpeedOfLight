@@ -1,4 +1,6 @@
+from kivy import platform
 from kivy.config import Config
+
 Config.set('graphics', 'width', '900')
 Config.set('graphics', 'height', '400')
 
@@ -6,6 +8,7 @@ from kivy.app import App
 from kivy.graphics import Color, Line
 from kivy.properties import NumericProperty, Clock
 from kivy.uix.widget import Widget
+from kivy.core.window import Window
 
 
 class MainWidget(Widget):
@@ -37,7 +40,30 @@ class MainWidget(Widget):
         # print(' INIT W:' + str(self.width) + ' H:' + str(self.height))
         self.init_vertical_lines()
         self.init_horizontal_lines()
+        if self.is_desktop():
+            self.keyboard = Window.request_keyboard(self.keyboard_closed, self)
+            self.keyboard.bind(on_key_down=self.on_keyboard_down)
+            self.keyboard.bind(on_key_up=self.on_keyboard_up)
         Clock.schedule_interval(self.update, 1.0 / 60.0)
+
+    def keyboard_closed(self):
+        self.keyboard.unbind(on_key_down=self.on_keyboard_down)
+        self.keyboard = None
+
+    def is_desktop(self):
+        if platform in ('linux', 'win', 'macosx'):
+            return True
+        return False
+
+    def on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        if keycode[1] == 'left':
+            self.current_speed_x = self.SPEED_X
+        elif keycode[1] == 'right':
+            self.current_speed_x = -self.SPEED_X
+        return True
+
+    def on_keyboard_up(self, keyboard, keycode):
+        self.current_speed_x = 0
 
     def on_parent(self, widget, parent):
         pass
