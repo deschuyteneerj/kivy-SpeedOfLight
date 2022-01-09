@@ -52,6 +52,7 @@ class MainWidget(Widget):
         self.init_vertical_lines()
         self.init_horizontal_lines()
         self.init_tiles()
+        self.pre_fill_tiles_coordinates()
         self.generate_tiles_coordinates()
 
         if self.is_desktop():
@@ -87,6 +88,12 @@ class MainWidget(Widget):
         y = self.get_line_y_from_index(ti_y)
         return x, y
 
+    # Generate 10 tiles forward for the beginning of the game
+    def pre_fill_tiles_coordinates(self):
+        for i in range(0, 10):
+            self.tiles_coordinates.append((0, i))
+
+    # Generate tiles for the game
     def generate_tiles_coordinates(self):
         last_x = 0
         last_y = 0
