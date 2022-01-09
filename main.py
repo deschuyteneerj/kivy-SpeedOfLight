@@ -5,7 +5,7 @@ Config.set('graphics', 'width', '900')
 Config.set('graphics', 'height', '400')
 
 from kivy.app import App
-from kivy.graphics import Color, Line
+from kivy.graphics import Color, Line, Quad
 from kivy.properties import NumericProperty, Clock
 from kivy.uix.widget import Widget
 from kivy.core.window import Window
@@ -37,18 +37,26 @@ class MainWidget(Widget):
     current_speed_x = 0
     current_offset_x = 0
 
+    # Tiles
+    tile = None
+    ti_x = 0
+    ti_y = 0
+
     # Function to initialize the game
     def __init__(self, **kwargs):
         super(MainWidget, self).__init__(**kwargs)
         # print(' INIT W:' + str(self.width) + ' H:' + str(self.height))
         self.init_vertical_lines()
         self.init_horizontal_lines()
+        self.init_tiles()
+
         if self.is_desktop():
             self.keyboard = Window.request_keyboard(self.keyboard_closed, self)
             self.keyboard.bind(on_key_down=self.on_keyboard_down)
             self.keyboard.bind(on_key_up=self.on_keyboard_up)
         Clock.schedule_interval(self.update, 1.0 / 60.0)
 
+    # Function to check if on computer for keyboards controls
     def is_desktop(self):
         if platform in ('linux', 'win', 'macosx'):
             return True
@@ -69,6 +77,32 @@ class MainWidget(Widget):
         line_y = index * spacing_y - self.current_offset_y
         return line_y
 
+    def get_tile_coordinates(self, ti_x, ti_y):
+        x = self.get_line_x_from_index(ti_x)
+        y = self.get_line_y_from_index(ti_y)
+        return x, y
+
+    # Every Init and Update functions
+    # Tiles
+    def init_tiles(self):
+        with self.canvas:
+            Color(1, 1, 1)
+            self.tile = Quad()
+
+    def update_tiles(self):
+        xmin, ymin = self.get_tile_coordinates(self.ti_x, self.ti_y)
+        xmax, ymax = self.get_tile_coordinates(self.ti_x + 1, self.ti_y + 1)
+        # Quad() coordinates in order
+        # 2     3
+        #
+        # 1     4
+        x1, y1 = self.transform(xmin, ymin)
+        x2, y2 = self.transform(xmin, ymax)
+        x3, y3 = self.transform(xmax, ymax)
+        x4, y4 = self.transform(xmax, ymin)
+        self.tile.points = [x1, y1, x2, y2, x3, y3, x4, y4]
+
+    # Vertical lines
     def init_vertical_lines(self):
         with self.canvas:
             Color(1, 1, 1)
@@ -83,6 +117,7 @@ class MainWidget(Widget):
             x2, y2 = self.transform(line_x, self.height)
             self.vertical_lines[i].points = [x1, y1, x2, y2]
 
+    # Horizontal lines
     def init_horizontal_lines(self):
         with self.canvas:
             Color(1, 1, 1)
@@ -106,6 +141,7 @@ class MainWidget(Widget):
         time_factor = dt * 60
         self.update_vertical_lines()
         self.update_horizontal_lines()
+        self.update_tiles()
         # self.current_offset_y += self.SPEED * time_factor
         spacing_y = self.H_LINES_SPACING * self.height
         if self.current_offset_y >= spacing_y:
