@@ -3,12 +3,12 @@ import random
 from kivy import platform
 from kivy.config import Config
 
-Config.set('graphics', 'width', '900')
-Config.set('graphics', 'height', '400')
+Config.set('graphics', 'width', '960')
+Config.set('graphics', 'height', '540')
 
 from kivy.app import App
 from kivy.graphics import Color, Line, Quad, Triangle
-from kivy.properties import NumericProperty, Clock
+from kivy.properties import NumericProperty, Clock, ObjectProperty
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.core.window import Window
 from kivy.lang import Builder
@@ -19,6 +19,9 @@ Builder.load_file('menu.kv')
 class MainWidget(RelativeLayout):
     from transforms import transform, transform_2d, transform_perspective
     from user_actions import keyboard_closed, on_keyboard_up, on_keyboard_down, on_touch_up, on_touch_down
+
+    # Menu
+    menu_widget = ObjectProperty()
 
     # Vanishing point
     perspective_point_x = NumericProperty(0)
@@ -56,13 +59,13 @@ class MainWidget(RelativeLayout):
     ship = None
     ship_coordinates = [(0, 0), (0, 0), (0, 0)]
 
-    # Game Over
+    # Game status
     state_game_over = False
+    state_game_has_started = False
 
     # Function to initialize the game
     def __init__(self, **kwargs):
         super(MainWidget, self).__init__(**kwargs)
-        # print(' INIT W:' + str(self.width) + ' H:' + str(self.height))
         self.init_vertical_lines()
         self.init_horizontal_lines()
         self.init_tiles()
@@ -266,7 +269,7 @@ class MainWidget(RelativeLayout):
         self.update_tiles()
         self.update_ship()
 
-        if not self.state_game_over:
+        if not self.state_game_over and self.state_game_has_started:
             speed_y = self.SPEED * self.height / 100
             # Activate the movement effect
             self.current_offset_y += speed_y * time_factor
@@ -285,7 +288,12 @@ class MainWidget(RelativeLayout):
         # Check game over
         if not self.check_ship_collisions() and not self.state_game_over:
             self.state_game_over = True
+            self.menu_widget.opacity = 1
             print('Game Over')
+
+    def on_menu_button_pressed(self):
+        self.state_game_has_started = True
+        self.menu_widget.opacity = 0
 
 
 class SpeedOfLightApp(App):
