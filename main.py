@@ -8,8 +8,8 @@ class MainWidget(Widget):
     perspective_point_x = NumericProperty(0)
     perspective_point_y = NumericProperty(0)
 
-    V_NB_LINES = 7
-    V_LINES_SPACING = .1  # screen width percentage
+    V_NB_LINES = 10
+    V_LINES_SPACING = .2  # screen width percentage
     vertical_lines = []
 
     def __init__(self, **kwargs):
@@ -38,15 +38,13 @@ class MainWidget(Widget):
         with self.canvas:
             Color(1, 1, 1)
             # self.line = Line(points=[100, 0, 100, 100])
-            # V_NB_LINES = 7
-            # V_LINES_SPACING = .1
             for i in range(0, self.V_NB_LINES):
                 self.vertical_lines.append(Line())
 
     def update_vertical_lines(self):
         central_line_x = self.width / 2
         spacing = self.V_LINES_SPACING * self.width
-        offset = -int(self.V_NB_LINES / 2)
+        offset = -int(self.V_NB_LINES / 2) + 0.5
         for i in range(0, self.V_NB_LINES):
             line_x = int(central_line_x + offset * spacing)
             x1, y1 = self.transform(line_x, 0)
@@ -72,6 +70,7 @@ class MainWidget(Widget):
 
         tr_x = self.perspective_point_x + offset_x
         return tr_x, tr_y
+
 
 class SpeedOfLightApp(App):
     pass
