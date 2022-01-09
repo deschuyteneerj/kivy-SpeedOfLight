@@ -31,7 +31,7 @@ class MainWidget(Widget):
     horizontal_lines = []
 
     # Moving effect on horizontal lines
-    SPEED = .2
+    SPEED = .8
     current_offset_y = 0
     current_y_loop = 0
 
@@ -51,6 +51,9 @@ class MainWidget(Widget):
     SHIP_BASE_Y = 0.04
     ship = None
     ship_coordinates = [(0, 0), (0, 0), (0, 0)]
+
+    # Game Over
+    state_game_over = False
 
     # Function to initialize the game
     def __init__(self, **kwargs):
@@ -252,27 +255,34 @@ class MainWidget(Widget):
 
     # Function refresh 60 fps
     def update(self, dt):
-        # print('dt: ' + str(dt * 60))
+        # print('dt: ' + str(dt*60))
         time_factor = dt * 60
+
         self.update_vertical_lines()
         self.update_horizontal_lines()
         self.update_tiles()
         self.update_ship()
-        speed_y = self.SPEED * self.height / 100
-        # Activate the movement effect
-        self.current_offset_y += speed_y * time_factor
-        spacing_y = self.H_LINES_SPACING * self.height
-        # Loop for infinite moving effect
-        if self.current_offset_y >= spacing_y:
-            self.current_offset_y -= spacing_y
-            self.current_y_loop += 1
-            self.generate_tiles_coordinates()
-        # Activate the controls on keyboard/touch
-        speed_x = self.current_speed_x * self.width / 100
-        self.current_offset_x += speed_x * time_factor
-        if not self.check_ship_collisions():
-            print('Game Over')
 
+        if not self.state_game_over:
+            speed_y = self.SPEED * self.height / 100
+            # Activate the movement effect
+            self.current_offset_y += speed_y * time_factor
+
+            spacing_y = self.H_LINES_SPACING * self.height
+            # Loop for infinite moving effect
+            while self.current_offset_y >= spacing_y:
+                self.current_offset_y -= spacing_y
+                self.current_y_loop += 1
+                self.generate_tiles_coordinates()
+
+            # Activate the controls on keyboard/touch
+            speed_x = self.current_speed_x * self.width / 100
+            self.current_offset_x += speed_x * time_factor
+
+        # Check game over
+        if not self.check_ship_collisions() and not self.state_game_over:
+            self.state_game_over = True
+            print('Game Over')
 
 
 class SpeedOfLightApp(App):
