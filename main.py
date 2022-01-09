@@ -37,6 +37,7 @@ class MainWidget(Widget):
     current_speed_x = 0
     current_offset_x = 0
 
+    # Function to initialize the game
     def __init__(self, **kwargs):
         super(MainWidget, self).__init__(**kwargs)
         # print(' INIT W:' + str(self.width) + ' H:' + str(self.height))

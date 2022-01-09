@@ -1,3 +1,4 @@
+# Functions to control the spaceship
 def keyboard_closed(self):
     self.keyboard.unbind(on_key_down=self.on_keyboard_down)
     self.keyboard.bind(on_key_up=self.on_keyboard_up)

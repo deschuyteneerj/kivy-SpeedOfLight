@@ -1,4 +1,4 @@
-# Function to change perspective from 2D to vanishing point perspective
+# Functions to change perspective from 2D to vanishing point perspective
 def transform(self, x, y):
     # return self.transform_2d(x, y)
     return self.transform_perspective(x, y)
