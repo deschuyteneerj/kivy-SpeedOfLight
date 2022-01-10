@@ -11,6 +11,22 @@ So this was the good opportunity to try to use Python for something different. B
 
 The idea is to control a spaceship and avoid obstacles. It is like a Rhythm Game... Not sure about that, but let's see !
 
+## The full project on each branch:
+### V1
+- Grid
+- Perspective
+- Grid Movements
+### V2
+- Generate the Path randomly
+- Display the Spaceship
+- Game Over state (Collision System)
+### V3
+- Menu
+- Background image
+- Sounds
+- Fonts
+- Score
+
 ## Feelings
 
 This was fun to use the Kivy Framework to create a desktop/mobile app.
