@@ -8,7 +8,7 @@ Config.set('graphics', 'height', '540')
 
 from kivy.app import App
 from kivy.graphics import Color, Line, Quad, Triangle
-from kivy.properties import NumericProperty, Clock, ObjectProperty
+from kivy.properties import NumericProperty, Clock, ObjectProperty, StringProperty
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.core.window import Window
 from kivy.lang import Builder
@@ -22,6 +22,8 @@ class MainWidget(RelativeLayout):
 
     # Menu
     menu_widget = ObjectProperty()
+    menu_title = StringProperty('S P E E D  O F  L I G H T')
+    menu_button_title = StringProperty('START')
 
     # Vanishing point
     perspective_point_x = NumericProperty(0)
@@ -302,8 +304,10 @@ class MainWidget(RelativeLayout):
         # Check game over
         if not self.check_ship_collisions() and not self.state_game_over:
             self.state_game_over = True
+            self.menu_title = 'G  A  M  E    O  V  E  R'
+            self.menu_button_title = 'RETRY'
             self.menu_widget.opacity = 1
-            print('Game Over')
+            # print('GAME OVER')
 
     def on_menu_button_pressed(self):
         self.reset_game()
