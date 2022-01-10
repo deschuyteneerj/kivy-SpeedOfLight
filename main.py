@@ -3,8 +3,8 @@ import random
 from kivy import platform
 from kivy.config import Config
 
-Config.set('graphics', 'width', '960')
-Config.set('graphics', 'height', '540')
+Config.set('graphics', 'width', '1280')
+Config.set('graphics', 'height', '720')
 
 from kivy.app import App
 from kivy.graphics import Color, Line, Quad, Triangle
@@ -12,6 +12,7 @@ from kivy.properties import NumericProperty, Clock, ObjectProperty, StringProper
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.core.window import Window
 from kivy.lang import Builder
+from kivy.core.audio import SoundLoader
 
 Builder.load_file('menu.kv')
 
@@ -23,7 +24,7 @@ class MainWidget(RelativeLayout):
     # Menu
     menu_widget = ObjectProperty()
     menu_title = StringProperty('S P E E D  O F  L I G H T')
-    menu_button_title = StringProperty('START')
+    menu_button_title = StringProperty('BEGIN')
     score_text = StringProperty()
 
     # Vanishing point
@@ -31,8 +32,8 @@ class MainWidget(RelativeLayout):
     perspective_point_y = NumericProperty(0)
 
     # Vertical lines
-    V_NB_LINES = 8
-    V_LINES_SPACING = .1  # screen width percentage
+    V_NB_LINES = 10
+    V_LINES_SPACING = .2  # screen width percentage
     vertical_lines = []
 
     # Horizontal lines
@@ -41,13 +42,13 @@ class MainWidget(RelativeLayout):
     horizontal_lines = []
 
     # Moving effect on horizontal lines
-    SPEED = .8
+    SPEED = 1.5
     current_offset_y = 0
     # aka Score
     current_y_loop = 0
 
     # Moving effect on vertical lines
-    SPEED_X = 3
+    SPEED_X = 2
     current_speed_x = 0
     current_offset_x = 0
 
@@ -67,9 +68,18 @@ class MainWidget(RelativeLayout):
     state_game_over = False
     state_game_has_started = False
 
+    # Sound
+    sound_begin = None
+    sound_jingle = None
+    sound_gameover_impact = None
+    sound_gameover_voice = None
+    sound_music1 = None
+    sound_restart = None
+
     # Function to initialize the game
     def __init__(self, **kwargs):
         super(MainWidget, self).__init__(**kwargs)
+        self.init_audio()
         self.init_vertical_lines()
         self.init_horizontal_lines()
         self.init_tiles()
@@ -85,6 +95,24 @@ class MainWidget(RelativeLayout):
             self.keyboard.bind(on_key_down=self.on_keyboard_down)
             self.keyboard.bind(on_key_up=self.on_keyboard_up)
         Clock.schedule_interval(self.update, 1.0 / 60.0)
+
+        self.sound_jingle.play()
+
+    def init_audio(self):
+        self.sound_begin = SoundLoader.load('audio/begin.wav')
+        self.sound_jingle = SoundLoader.load('audio/jingle.wav')
+        self.sound_gameover_impact = SoundLoader.load('audio/gameover_impact.wav')
+        self.sound_gameover_voice = SoundLoader.load('audio/gameover_voice.wav')
+        self.sound_music1 = SoundLoader.load('audio/music1.wav')
+        self.sound_restart = SoundLoader.load('audio/restart.wav')
+
+        # Volume of tracks
+        self.sound_music1.volume = 1
+        self.sound_gameover_impact.volume = .6
+        self.sound_begin.volume = .25
+        self.sound_jingle.volume = .25
+        self.sound_gameover_voice.volume = .25
+        self.sound_restart.volume = .25
 
     # Function to reset the game
     def reset_game(self):
@@ -309,11 +337,23 @@ class MainWidget(RelativeLayout):
         if not self.check_ship_collisions() and not self.state_game_over:
             self.state_game_over = True
             self.menu_title = 'G  A  M  E    O  V  E  R'
-            self.menu_button_title = 'RETRY'
+            self.menu_button_title = 'RESTART'
             self.menu_widget.opacity = 1
+            self.sound_music1.stop()
+            self.sound_gameover_impact.play()
+            Clock.schedule_once(self.play_voice_game_over, 2)
             # print('GAME OVER')
 
+    def play_voice_game_over(self, dt):
+        if self.state_game_over:
+            self.sound_gameover_voice.play()
+
     def on_menu_button_pressed(self):
+        if self.state_game_over:
+            self.sound_restart.play()
+        else:
+            self.sound_begin.play()
+        self.sound_music1.play()
         self.reset_game()
         self.state_game_has_started = True
         self.menu_widget.opacity = 0
