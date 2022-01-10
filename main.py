@@ -24,6 +24,7 @@ class MainWidget(RelativeLayout):
     menu_widget = ObjectProperty()
     menu_title = StringProperty('S P E E D  O F  L I G H T')
     menu_button_title = StringProperty('START')
+    score_text = StringProperty()
 
     # Vanishing point
     perspective_point_x = NumericProperty(0)
@@ -42,6 +43,7 @@ class MainWidget(RelativeLayout):
     # Moving effect on horizontal lines
     SPEED = .8
     current_offset_y = 0
+    # aka Score
     current_y_loop = 0
 
     # Moving effect on vertical lines
@@ -91,6 +93,7 @@ class MainWidget(RelativeLayout):
         self.current_speed_x = 0
         self.current_offset_x = 0
         self.tiles_coordinates = []
+        self.score_text = 'SCORE: ' + str(self.current_y_loop)
         self.pre_fill_tiles_coordinates()
         self.generate_tiles_coordinates()
         self.state_game_over = False
@@ -295,6 +298,7 @@ class MainWidget(RelativeLayout):
             while self.current_offset_y >= spacing_y:
                 self.current_offset_y -= spacing_y
                 self.current_y_loop += 1
+                self.score_text = 'SCORE: ' + str(self.current_y_loop)
                 self.generate_tiles_coordinates()
 
             # Activate the controls on keyboard/touch
