@@ -11,6 +11,16 @@ So this was the good opportunity to try to use Python for something different. B
 
 The idea is to control a spaceship and avoid obstacles. It is like a Rhythm Game... Not sure about that, but let's see !
 
+## Some Screenshots
+Start Menu: 
+![Start Menu](https://github.com/deschuyteneerj/kivy-SpeedOfLight/blob/v3/screenshots/SOL_start_menu.png?raw=true "Start Menu")
+
+Game Screen: 
+![Game Screen](https://github.com/deschuyteneerj/kivy-SpeedOfLight/blob/v3/screenshots/SOL_game_screen.png?raw=true "Game Screen")
+
+Game Over Screen: 
+![Game Over Screen](https://github.com/deschuyteneerj/kivy-SpeedOfLight/blob/v3/screenshots/SOL_game_over_screen.png?raw=true "Game Over Screen")
+
 ## The full project on each branch:
 ### V1
 - Grid
